@@ -1,0 +1,1436 @@
+<!DOCTYPE html>
+
+<html lang="ru">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <title>Квест ко дню рождения</title>
+
+    <style>
+
+        :root {
+
+            --primary: #FF6B9D;
+
+            --primary-dark: #E63973;
+
+            --bg: #1a1a2e;
+
+            --card: #16213e;
+
+            --card-light: #0f3460;
+
+            --text: #e8e8e8;
+
+            --danger: #ff4757;
+
+            --success: #2ed573;
+
+            --warning: #ffa502;
+
+        }
+
+
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+
+
+        body {
+
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+
+            background: var(--bg);
+
+            color: var(--text);
+
+            min-height: 100vh;
+
+            display: flex;
+
+            flex-direction: column;
+
+            align-items: center;
+
+            padding: 20px;
+
+        }
+
+
+
+        .screen {
+
+            display: none;
+
+            width: 100%;
+
+            max-width: 420px;
+
+            flex-direction: column;
+
+            align-items: center;
+
+        }
+
+
+
+        .screen.active { display: flex; }
+
+
+
+        #home-screen { justify-content: center; text-align: center; min-height: 80vh; }
+
+
+
+        .home-title {
+
+            font-size: 1.6rem;
+
+            font-weight: 800;
+
+            line-height: 1.5;
+
+            margin-bottom: 16px;
+
+            color: var(--primary);
+
+        }
+
+
+
+        .home-subtitle {
+
+            font-size: 1.1rem;
+
+            font-weight: 600;
+
+            line-height: 1.5;
+
+            margin-bottom: 30px;
+
+            color: var(--warning);
+
+        }
+
+
+
+        .btn-main {
+
+            background: var(--primary);
+
+            color: #fff;
+
+            border: none;
+
+            padding: 16px 40px;
+
+            border-radius: 12px;
+
+            font-size: 1.2rem;
+
+            font-weight: 700;
+
+            cursor: pointer;
+
+            transition: transform 0.15s, background 0.2s;
+
+            margin-top: 20px;
+
+        }
+
+
+
+        .btn-main:hover { background: var(--primary-dark); transform: scale(1.03); }
+
+        .btn-main:active { transform: scale(0.97); }
+
+
+
+        .btn-nastya {
+
+            position: fixed;
+
+            bottom: 20px;
+
+            right: 20px;
+
+            background: var(--card-light);
+
+            color: var(--text);
+
+            border: 1px solid var(--primary);
+
+            padding: 8px 16px;
+
+            border-radius: 20px;
+
+            font-size: 0.85rem;
+
+            cursor: pointer;
+
+            opacity: 0.6;
+
+            transition: opacity 0.2s;
+
+        }
+
+
+
+        .btn-nastya:hover { opacity: 1; }
+
+
+
+        .question-card, .task-card, .debt-screen, .nastya-section {
+
+            background: var(--card);
+
+            border-radius: 16px;
+
+            padding: 28px 22px;
+
+            width: 100%;
+
+            box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+
+            text-align: center;
+
+        }
+
+
+
+        .progress-bar {
+
+            color: var(--primary);
+
+            font-size: 0.85rem;
+
+            font-weight: 600;
+
+            margin-bottom: 18px;
+
+        }
+
+
+
+        .question-text, .task-text {
+
+            font-size: 1.15rem;
+
+            font-weight: 700;
+
+            line-height: 1.5;
+
+            margin-bottom: 22px;
+
+        }
+
+
+
+        input[type="text"], input[type="password"] {
+
+            width: 100%;
+
+            padding: 14px 16px;
+
+            border: 2px solid #334;
+
+            border-radius: 10px;
+
+            font-size: 1rem;
+
+            background: var(--bg);
+
+            color: var(--text);
+
+            outline: none;
+
+            transition: border-color 0.2s;
+
+        }
+
+
+
+        input[type="text"]:focus, input[type="password"]:focus {
+
+            border-color: var(--primary);
+
+        }
+
+
+
+        .btn-answer {
+
+            width: 100%;
+
+            background: var(--primary);
+
+            color: #fff;
+
+            border: none;
+
+            padding: 14px;
+
+            border-radius: 10px;
+
+            font-size: 1.05rem;
+
+            font-weight: 700;
+
+            cursor: pointer;
+
+            margin-top: 16px;
+
+            transition: background 0.2s;
+
+        }
+
+
+
+        .btn-answer:hover { background: var(--primary-dark); }
+
+
+
+        .feedback {
+
+            margin-top: 18px;
+
+            font-size: 1rem;
+
+            font-weight: 600;
+
+            min-height: 1.5em;
+
+        }
+
+
+
+        .feedback.error { color: var(--danger); }
+
+        .feedback.success { color: var(--success); }
+
+
+
+        .penalty-notice {
+
+            background: var(--danger);
+
+            color: #fff;
+
+            padding: 12px 16px;
+
+            border-radius: 10px;
+
+            margin-top: 16px;
+
+            font-weight: 700;
+
+            font-size: 1rem;
+
+        }
+
+
+
+        .correct-answer {
+
+            background: var(--card-light);
+
+            color: var(--success);
+
+            padding: 12px 16px;
+
+            border-radius: 10px;
+
+            margin-top: 12px;
+
+            font-size: 0.95rem;
+
+        }
+
+
+
+        .task-emoji { font-size: 3rem; margin-bottom: 16px; }
+
+
+
+        .btn-done {
+
+            background: var(--success);
+
+            color: #fff;
+
+            border: none;
+
+            padding: 14px 36px;
+
+            border-radius: 10px;
+
+            font-size: 1.05rem;
+
+            font-weight: 700;
+
+            cursor: pointer;
+
+            transition: background 0.2s;
+
+        }
+
+
+
+        .btn-done:hover { background: #26bd5a; }
+
+
+
+        .task-waiting, .final-waiting {
+
+            margin-top: 16px;
+
+            color: var(--warning);
+
+            font-weight: 600;
+
+        }
+
+
+
+        .task-confirmed {
+
+            margin-top: 16px;
+
+            color: var(--success);
+
+            font-weight: 700;
+
+        }
+
+
+
+        #final-screen, #debt-screen { justify-content: center; text-align: center; min-height: 80vh; }
+
+
+
+        .final-text {
+
+            font-size: 1.4rem;
+
+            font-weight: 700;
+
+            line-height: 1.6;
+
+            color: var(--primary);
+
+            margin-bottom: 24px;
+
+        }
+
+
+
+        .final-text-small {
+
+            font-size: 1.2rem;
+
+            font-weight: 700;
+
+            line-height: 1.6;
+
+            color: var(--warning);
+
+            margin-bottom: 24px;
+
+        }
+
+
+
+        .final-last {
+
+            font-size: 2rem;
+
+            font-weight: 800;
+
+            color: var(--success);
+
+            margin-bottom: 20px;
+
+        }
+
+
+
+        .debt-emoji { font-size: 3rem; margin-bottom: 16px; }
+
+
+
+        .nastya-title {
+
+            text-align: center;
+
+            font-size: 1.3rem;
+
+            font-weight: 800;
+
+            color: var(--primary);
+
+            margin-bottom: 20px;
+
+        }
+
+
+
+        .penalty-total {
+
+            background: var(--danger);
+
+            color: #fff;
+
+            padding: 16px;
+
+            border-radius: 12px;
+
+            text-align: center;
+
+            font-size: 1.1rem;
+
+            font-weight: 700;
+
+            margin-bottom: 20px;
+
+        }
+
+
+
+        .penalty-zero {
+
+            background: var(--success);
+
+            color: #fff;
+
+            padding: 16px;
+
+            border-radius: 12px;
+
+            text-align: center;
+
+            font-size: 1.1rem;
+
+            font-weight: 700;
+
+            margin-bottom: 20px;
+
+        }
+
+
+
+        .task-confirm-item {
+
+            background: var(--card-light);
+
+            border-radius: 10px;
+
+            padding: 14px;
+
+            margin-bottom: 12px;
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            gap: 10px;
+
+        }
+
+
+
+        .task-confirm-text {
+
+            font-size: 0.9rem;
+
+            line-height: 1.4;
+
+            flex: 1;
+
+        }
+
+
+
+        .btn-confirm {
+
+            background: var(--success);
+
+            color: #fff;
+
+            border: none;
+
+            padding: 8px 16px;
+
+            border-radius: 8px;
+
+            font-size: 0.85rem;
+
+            font-weight: 700;
+
+            cursor: pointer;
+
+            white-space: nowrap;
+
+            transition: background 0.2s;
+
+        }
+
+
+
+        .btn-confirm:hover { background: #26bd5a; }
+
+
+
+        .badge-waiting { color: var(--warning); font-size: 0.85rem; font-weight: 600; }
+
+        .badge-confirmed { color: var(--success); font-size: 0.85rem; font-weight: 600; }
+
+        .badge-pending { color: #666; font-size: 0.85rem; font-weight: 600; }
+
+
+
+        .btn-back {
+
+            background: transparent;
+
+            color: var(--text);
+
+            border: 1px solid #445;
+
+            padding: 10px 20px;
+
+            border-radius: 8px;
+
+            font-size: 0.9rem;
+
+            cursor: pointer;
+
+            margin-top: 16px;
+
+            transition: border-color 0.2s;
+
+        }
+
+
+
+        .btn-back:hover { border-color: var(--primary); color: var(--primary); }
+
+
+
+        .password-error {
+
+            color: var(--danger);
+
+            margin-top: 10px;
+
+            font-size: 0.9rem;
+
+        }
+
+
+
+        .penalty-breakdown {
+
+            margin-bottom: 20px;
+
+            font-size: 0.85rem;
+
+            color: #aab;
+
+        }
+
+
+
+        .penalty-breakdown div {
+
+            padding: 4px 0;
+
+            border-bottom: 1px solid #334;
+
+        }
+
+
+
+        .penalty-breakdown div:last-child { border: none; }
+
+
+
+        .final-confirm-box {
+
+            background: var(--card-light);
+
+            border-radius: 12px;
+
+            padding: 16px;
+
+            margin-top: 16px;
+
+            margin-bottom: 16px;
+
+        }
+
+
+
+        .final-confirm-text {
+
+            font-size: 0.95rem;
+
+            font-weight: 600;
+
+            margin-bottom: 12px;
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+
+
+    <!-- ГЛАВНЫЙ ЭКРАН -->
+
+    <div class="screen active" id="home-screen">
+
+        <div class="home-title">че лошара, дудку хочешь?<br>отвечай на вопросы 🙂‍↕️</div>
+
+        <div class="home-subtitle">думай как я, иначе влетишь на бабки😈</div>
+
+        <button class="btn-main" onclick="startQuest()">Поехали</button>
+
+    </div>
+
+
+
+    <!-- ЭКРАН ВОПРОСА -->
+
+    <div class="screen" id="question-screen">
+
+        <div class="question-card">
+
+            <div class="progress-bar" id="progress"></div>
+
+            <div class="question-text" id="question-text"></div>
+
+            <input type="text" id="answer-input" placeholder="Впиши ответ..." autocomplete="off">
+
+            <button class="btn-answer" onclick="checkAnswer()">Ответить</button>
+
+            <div class="feedback" id="feedback"></div>
+
+            <div id="penalty-box"></div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- ЭКРАН ЗАДАНИЯ -->
+
+    <div class="screen" id="task-screen">
+
+        <div class="task-card">
+
+            <div class="progress-bar" id="task-progress"></div>
+
+            <div class="task-emoji" id="task-emoji"></div>
+
+            <div class="task-text" id="task-text"></div>
+
+            <button class="btn-done" id="btn-done" onclick="markTaskDone()">Готово</button>
+
+            <div class="task-waiting" id="task-waiting" style="display:none">⏳ Жди подтверждения от Насти...</div>
+
+            <div class="task-confirmed" id="task-confirmed" style="display:none">✅ Настя подтвердила! Можно дальше.</div>
+
+            <button class="btn-back" id="btn-next-task" style="display:none" onclick="nextStep()">Дальше</button>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- ПРОМЕЖУТОЧНЫЙ ФИНАЛЬНЫЙ ЭКРАН (сестра ждёт подтверждения) -->
+
+    <div class="screen" id="final-wait-screen">
+
+        <div class="debt-screen">
+
+            <div class="final-text-small" id="final-wait-text"></div>
+
+            <button class="btn-done" id="btn-final-done" onclick="markFinalDone()">Сделано</button>
+
+            <div class="final-waiting" id="final-waiting-msg" style="display:none">⏳ Жди, пока Настя подтвердит...</div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- ФИНАЛЬНЫЙ ЭКРАН -->
+
+    <div class="screen" id="final-screen">
+
+        <div class="final-last">иди за дудкой, дура</div>
+
+    </div>
+
+
+
+    <!-- РАЗДЕЛ "ДЛЯ НАСТИ" -->
+
+    <div class="screen" id="nastya-screen">
+
+        <div class="nastya-section">
+
+            <div class="nastya-title">Для Насти</div>
+
+            <div id="nastya-login">
+
+                <input type="password" id="nastya-password" placeholder="Введите пароль" autocomplete="off">
+
+                <button class="btn-answer" onclick="nastyaLogin()">Войти</button>
+
+                <div class="password-error" id="password-error" style="display:none">Неверный пароль!</div>
+
+            </div>
+
+            <div id="nastya-content" style="display:none">
+
+                <div id="penalty-display"></div>
+
+                <div id="penalty-details"></div>
+
+                <div id="tasks-confirm-list"></div>
+
+                <div id="final-confirm-section"></div>
+
+                <button class="btn-back" onclick="returnFromNastya()">Назад</button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <button class="btn-nastya" onclick="openNastya()">Для Насти</button>
+
+
+
+    <script>
+
+        // ====== ДАННЫЕ ======
+
+        const questions = [
+
+            { text: "Когда у тебя день рождения?", answer: "двадцать седьмого сентября", penalty: 10 },
+
+            { text: "Сколько тебе сегодня исполнилось?", answer: "очко", penalty: 20 },
+
+            { text: "Что ты каждый день хочешь попробовать съесть?", answer: "какашки", penalty: 30 },
+
+            { text: "Какое первое слово ты сказала (не считая «мама» и «папа»)?", answer: "ты не помнишь", penalty: 40 },
+
+            { text: "На сколько вопросов ты уже ответила?", answer: "4", penalty: 0 },
+
+            { text: "Сколько будет 1002 : 282?", answer: "3,5", penalty: 0 }
+
+        ];
+
+
+
+        const tasks = [
+
+            { emoji: "📞", text: "Позвони маме с папой и поздравь их с твоим днём рождения." },
+
+            { emoji: "📸", text: "Выложи в историю в Telegram твою самую ржачную фотку (для всех). Фото можем сделать сейчас или я выберу сама 😈" },
+
+            { emoji: "💪", text: "Лайт-режим: присядь 10 раз." },
+
+            { emoji: "🐔", text: "Сядь на стул на корточки и прокукарекай 5 раз 🙂‍↕️" }
+
+        ];
+
+
+
+        // ====== СОСТОЯНИЕ ======
+
+        let state = {
+
+            step: 0,
+
+            penalties: [],
+
+            taskStatus: [null, null, null, null],
+
+            finalStatus: null,      // null = не дошла, 'waiting' = нажала «Сделано», 'confirmed' = Настя подтвердила
+
+            debtCleared: false
+
+        };
+
+
+
+        let nastyaLoggedIn = false;
+
+
+
+        function getTotalPenalty() {
+
+            return state.penalties.reduce((sum, p) => sum + p.amount, 0);
+
+        }
+
+
+
+        // ====== НАВИГАЦИЯ ======
+
+        function showScreen(id) {
+
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+
+            document.getElementById(id).classList.add('active');
+
+        }
+
+
+
+        function startQuest() {
+
+            state.step = 1;
+
+            goToStep();
+
+        }
+
+
+
+        function nextStep() {
+
+            state.step++;
+
+            goToStep();
+
+        }
+
+
+
+        function goToStep() {
+
+            if (state.step === 0) {
+
+                showScreen('home-screen');
+
+            } else if (state.step >= 1 && state.step <= 6) {
+
+                showQuestion(state.step - 1);
+
+            } else if (state.step >= 7 && state.step <= 10) {
+
+                showTask(state.step - 7);
+
+            } else if (state.step === 11) {
+
+                showFinalWait();
+
+            }
+
+        }
+
+
+
+        // ====== ПРОМЕЖУТОЧНЫЙ ФИНАЛ ======
+
+        function showFinalWait() {
+
+            showScreen('final-wait-screen');
+
+            const totalPenalty = getTotalPenalty();
+
+
+
+            let msg = 'о, прошла 🙄<br>гаси долг и подарок твой.<br>поздравляю с очком, бро😎';
+
+            if (totalPenalty > 0) {
+
+                msg += `<br><br>💸 Твой долг: ${totalPenalty} рублей.<br>Скинь Насте — и она отпустит тебя за подарком.`;
+
+            }
+
+
+
+            document.getElementById('final-wait-text').innerHTML = msg;
+
+
+
+            const btnDone = document.getElementById('btn-final-done');
+
+            const waitingMsg = document.getElementById('final-waiting-msg');
+
+
+
+            if (state.finalStatus === null) {
+
+                btnDone.style.display = 'inline-block';
+
+                waitingMsg.style.display = 'none';
+
+            } else if (state.finalStatus === 'waiting') {
+
+                btnDone.style.display = 'none';
+
+                waitingMsg.style.display = 'block';
+
+            } else if (state.finalStatus === 'confirmed') {
+
+                // Настя уже подтвердила — показываем финал
+
+                showScreen('final-screen');
+
+            }
+
+        }
+
+
+
+        function markFinalDone() {
+
+            state.finalStatus = 'waiting';
+
+            showFinalWait();
+
+        }
+
+
+
+        // ====== ВОПРОСЫ ======
+
+        function showQuestion(index) {
+
+            showScreen('question-screen');
+
+            const q = questions[index];
+
+            document.getElementById('progress').textContent = `Вопрос ${index + 1} из 10`;
+
+            document.getElementById('question-text').textContent = q.text;
+
+            document.getElementById('answer-input').value = '';
+
+            document.getElementById('feedback').textContent = '';
+
+            document.getElementById('feedback').className = 'feedback';
+
+            document.getElementById('penalty-box').innerHTML = '';
+
+            document.getElementById('answer-input').focus();
+
+        }
+
+
+
+        function checkAnswer() {
+
+            const index = state.step - 1;
+
+            const q = questions[index];
+
+            const userInput = document.getElementById('answer-input').value.trim().toLowerCase();
+
+            const correctAnswer = q.answer.toLowerCase();
+
+            const feedback = document.getElementById('feedback');
+
+            const penaltyBox = document.getElementById('penalty-box');
+
+
+
+            if (userInput === correctAnswer) {
+
+                feedback.textContent = 'Верно! ✅';
+
+                feedback.className = 'feedback success';
+
+                setTimeout(() => { nextStep(); }, 1000);
+
+            } else {
+
+                feedback.textContent = 'Неверно! ❌';
+
+                feedback.className = 'feedback error';
+
+
+
+                if (q.penalty > 0) {
+
+                    state.penalties.push({ question: index + 1, amount: q.penalty });
+
+                    penaltyBox.innerHTML = `
+
+                        <div class="penalty-notice">Штраф: ${q.penalty} рублей 💸</div>
+
+                        <div class="correct-answer">Правильный ответ: «${q.answer}»</div>
+
+                    `;
+
+                    setTimeout(() => { nextStep(); }, 3000);
+
+                } else {
+
+                    penaltyBox.innerHTML = '';
+
+                }
+
+            }
+
+        }
+
+
+
+        // ====== ЗАДАНИЯ ======
+
+        function showTask(index) {
+
+            showScreen('task-screen');
+
+            const t = tasks[index];
+
+            document.getElementById('task-progress').textContent = `Задание ${state.step} из 10`;
+
+            document.getElementById('task-emoji').textContent = t.emoji;
+
+            document.getElementById('task-text').textContent = t.text;
+
+
+
+            const status = state.taskStatus[index];
+
+            const btnDone = document.getElementById('btn-done');
+
+            const waiting = document.getElementById('task-waiting');
+
+            const confirmed = document.getElementById('task-confirmed');
+
+            const btnNext = document.getElementById('btn-next-task');
+
+
+
+            btnDone.style.display = 'none';
+
+            waiting.style.display = 'none';
+
+            confirmed.style.display = 'none';
+
+            btnNext.style.display = 'none';
+
+
+
+            if (status === null) {
+
+                btnDone.style.display = 'inline-block';
+
+            } else if (status === 'waiting') {
+
+                waiting.style.display = 'block';
+
+            } else if (status === 'confirmed') {
+
+                confirmed.style.display = 'block';
+
+                btnNext.style.display = 'inline-block';
+
+            }
+
+        }
+
+
+
+        function markTaskDone() {
+
+            const index = state.step - 7;
+
+            state.taskStatus[index] = 'waiting';
+
+            showTask(index);
+
+        }
+
+
+
+        // ====== РАЗДЕЛ "ДЛЯ НАСТИ" ======
+
+        function openNastya() {
+
+            showScreen('nastya-screen');
+
+            if (nastyaLoggedIn) {
+
+                document.getElementById('nastya-login').style.display = 'none';
+
+                document.getElementById('nastya-content').style.display = 'block';
+
+                renderNastyaContent();
+
+            } else {
+
+                document.getElementById('nastya-login').style.display = 'block';
+
+                document.getElementById('nastya-content').style.display = 'none';
+
+                document.getElementById('nastya-password').value = '';
+
+                document.getElementById('password-error').style.display = 'none';
+
+            }
+
+        }
+
+
+
+        function nastyaLogin() {
+
+            const pass = document.getElementById('nastya-password').value;
+
+            if (pass === '0310') {
+
+                nastyaLoggedIn = true;
+
+                document.getElementById('nastya-login').style.display = 'none';
+
+                document.getElementById('nastya-content').style.display = 'block';
+
+                renderNastyaContent();
+
+            } else {
+
+                document.getElementById('password-error').style.display = 'block';
+
+            }
+
+        }
+
+
+
+        function renderNastyaContent() {
+
+            // --- Штрафы / долг ---
+
+            const totalPenalty = getTotalPenalty();
+
+            const penaltyDisplay = document.getElementById('penalty-display');
+
+            const penaltyDetails = document.getElementById('penalty-details');
+
+
+
+            if (totalPenalty > 0 && !state.debtCleared) {
+
+                penaltyDisplay.innerHTML = `<div class="penalty-total">💸 Долг сестры: ${totalPenalty} рублей</div>`;
+
+                penaltyDetails.innerHTML = '<div class="penalty-breakdown">' +
+
+                    state.penalties.map(p => `<div>Вопрос ${p.question}: ${p.amount} руб.</div>`).join('') +
+
+                    '</div>';
+
+                penaltyDetails.innerHTML += `
+
+                    <button class="btn-answer" style="background: var(--success); margin-top: 12px;" onclick="clearDebt()">Долг погашен ✅</button>
+
+                `;
+
+            } else if (state.debtCleared) {
+
+                penaltyDisplay.innerHTML = '<div class="penalty-zero">✅ Долг погашен!</div>';
+
+                penaltyDetails.innerHTML = '';
+
+            } else {
+
+                penaltyDisplay.innerHTML = '<div class="penalty-zero">✅ Штрафов нет!</div>';
+
+                penaltyDetails.innerHTML = '';
+
+            }
+
+
+
+            // --- Задания ---
+
+            const list = document.getElementById('tasks-confirm-list');
+
+            let html = '';
+
+            for (let i = 0; i < tasks.length; i++) {
+
+                const status = state.taskStatus[i];
+
+                let badge = '';
+
+                let btn = '';
+
+
+
+                if (status === null) {
+
+                    badge = '<span class="badge-pending">Ещё не начала</span>';
+
+                } else if (status === 'waiting') {
+
+                    badge = '<span class="badge-waiting">⏳ Ждёт подтверждения</span>';
+
+                    btn = `<button class="btn-confirm" onclick="confirmTask(${i})">Сделано</button>`;
+
+                } else if (status === 'confirmed') {
+
+                    badge = '<span class="badge-confirmed">✅ Подтверждено</span>';
+
+                }
+
+
+
+                html += `
+
+                    <div class="task-confirm-item">
+
+                        <div class="task-confirm-text">${i + 7}. ${tasks[i].text}</div>
+
+                        <div>${badge}${btn ? '<br>' + btn : ''}</div>
+
+                    </div>
+
+                `;
+
+            }
+
+            list.innerHTML = html;
+
+
+
+            // --- Финальное подтверждение ---
+
+            const finalSection = document.getElementById('final-confirm-section');
+
+
+
+            if (state.finalStatus === 'waiting') {
+
+                let canRelease = true;
+
+
+
+                if (totalPenalty > 0 && !state.debtCleared) {
+
+                    canRelease = false;
+
+                }
+
+
+
+                if (canRelease) {
+
+                    finalSection.innerHTML = `
+
+                        <div class="final-confirm-box">
+
+                            <div class="final-confirm-text">Сестра прошла всё и ждёт подарок 🎁<br>Отпустить её за дудкой?</div>
+
+                            <button class="btn-confirm" style="padding: 12px 28px; font-size: 1rem;" onclick="releaseGift()">Отпустить 😎</button>
+
+                        </div>
+
+                    `;
+
+                } else {
+
+                    finalSection.innerHTML = `
+
+                        <div class="final-confirm-box">
+
+                            <div class="final-confirm-text" style="color: var(--danger);">Сестра ждёт, но долг ещё не погашен!<br>Сначала нажми «Долг погашен ✅» выше.</div>
+
+                        </div>
+
+                    `;
+
+                }
+
+            } else if (state.finalStatus === 'confirmed') {
+
+                finalSection.innerHTML = `
+
+                    <div class="final-confirm-box">
+
+                        <div class="final-confirm-text" style="color: var(--success);">✅ Подарок отдан! Сестра свободна.</div>
+
+                    </div>
+
+                `;
+
+            } else {
+
+                finalSection.innerHTML = '';
+
+            }
+
+        }
+
+
+
+        function confirmTask(index) {
+
+            state.taskStatus[index] = 'confirmed';
+
+            renderNastyaContent();
+
+        }
+
+
+
+        function clearDebt() {
+
+            state.debtCleared = true;
+
+            renderNastyaContent();
+
+        }
+
+
+
+        function releaseGift() {
+
+            state.finalStatus = 'confirmed';
+
+            renderNastyaContent();
+
+            // Переключаем сестру на финальный экран
+
+            showScreen('final-screen');
+
+        }
+
+
+
+        function returnFromNastya() {
+
+            goToStep();
+
+        }
+
+    </script>
+
+</body>
+
+</html>
+
